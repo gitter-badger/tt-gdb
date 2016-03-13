@@ -28,7 +28,7 @@ Known issue(s) / concerns / future plans:
 
 Hope this helps others who are looking for a similar solution!
 
-To successfully build this solution, you Must create your account wide delegation service, download the couple files you will receive from google. Please see the first site of interest for more info.  After creation then insert them into this project. Also edit the App.config file to reflect the necessary values for your environment.
+To successfully build this solution, you Must create your account wide delegation service. Download the couple files you will receive from google after creating the service account. Please see the installation instructions at http://www.tuckertechonline.comn/ for more information. After you have the service and files setup, open Tucker Tech's Google Drive Backup tool, click on "Edit" then "Preferences" and fill out the key location and service email account that you created.
 --
 If you download the solution and plan to use it, make sure to download the NuGet repository for the Google Apps Drive (v3) tools. This can be done by opening the NuGet manager in VS and typing in: "Install-Package Google.Apis.Drive.v3" (Without quotes)
 
