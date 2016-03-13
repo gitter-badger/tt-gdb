@@ -1,4 +1,4 @@
-﻿// Created by Mike Tucker
+// Created by Mike Tucker
 // mtucker6784@gmail.com
 // Provided under GPL 3.0 @ http://www.gnu.org/licenses/gpl.html
 // For LDAP, add System.DirectoryServices.AccountManagement reference
@@ -301,10 +301,11 @@ namespace TuckerTech_GABackup_GUI
                                                         // Last page, save this token for the next polling interval
                                                         savedStartPageToken = changes.NewStartPageToken;
                                                     }
+                                                    
                                                     // Bring our token up to date for next run
                                                     pageToken = changes.NextPageToken;
                                                     File.WriteAllText(savelocation + ".currenttoken.tok", start.StartPageTokenValue);
-                                                      
+                                                    
                                                 }
                                                 deltalog.Close();
                                                 folderlog.Close();
@@ -326,12 +327,13 @@ namespace TuckerTech_GABackup_GUI
                                             Console.WriteLine("\nFiles to backup:\n");
                                             txtLog.Text += (Environment.NewLine + "Files to backup:" + Environment.NewLine);
                                             if (deltafiles == null)
-                                            {
+                                            { 
                                                 return;
                                             }
                                             else
                                             {
-
+                                                double damn = ((gtoken - double.Parse(txtPrevToken.Text)));
+                                                damn = Math.Round((damn / totalfiles));
                                                 foreach (var file in deltafiles)
                                                 {
                                                     try
@@ -349,12 +351,17 @@ namespace TuckerTech_GABackup_GUI
                                                         bgW.ReportProgress(cnttototal);
                                                         stripLabel.Text = "File " + cnttototal + " of " + totalfiles;
                                                         double mathisfun = ((100 * cnttototal) / totalfiles);
+                                                        double mathToken = double.Parse(txtPrevToken.Text);
+                                                        mathToken = Math.Round((damn + mathToken));
+                                                        // Bring our token up to date for next run
+                                                        txtPrevToken.Text = mathToken.ToString();
+                                                        File.WriteAllText(savelocation + ".currenttoken.tok", mathToken.ToString());
                                                         lblProgresslbl.Text = ("Current progress: " + mathisfun.ToString() +"% completed.");
                                                         //if (cnttototal == totalfiles)
                                                         //    stripLabel.Text = cnttototal + "/" + totalfiles + "!";
                                                         // Our file is a CSV. Column 1 = file ID, Column 2 = File name
                                                         var values = file.Split(',');
-
+                                                        
                                                         string fileId = values[0];
                                                         string fileName = values[1];
                                                         string mimetype = values[2];
@@ -535,11 +542,13 @@ namespace TuckerTech_GABackup_GUI
                                                         // we typically see this with a google form or google draw file, too.
                                                         Console.Write("\nInfo: ---> " + ex.Message.ToString() + "\n");
                                                         txtLog.Text += (Environment.NewLine + "Info: " + ex.Message.ToString() + Environment.NewLine);
+
                                                     }
                                                 }
 
 
                                             }
+
                                             Console.WriteLine("\n\n\tBackup completed for selected user!");
                                             lblFile.Text = "";
                                             txtLog.Text += ("Backup completed for current selected user!" + Environment.NewLine);
