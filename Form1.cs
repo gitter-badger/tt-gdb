@@ -1,4 +1,4 @@
-// Created by Mike Tucker
+﻿// Created by Mike Tucker
 // mtucker6784@gmail.com
 // Provided under GPL 3.0 @ http://www.gnu.org/licenses/gpl.html
 // For LDAP, add System.DirectoryServices.AccountManagement reference
@@ -77,7 +77,7 @@ namespace TuckerTech_GABackup_GUI
 
         private void btnStart_Click(object sender, EventArgs e)
         {
-            CheckForIllegalCrossThreadCalls = false;
+            //CheckForIllegalCrossThreadCalls = false;
             if (bgW.IsBusy == true)
             {
                 proBar1.Value = 0;
@@ -228,12 +228,10 @@ namespace TuckerTech_GABackup_GUI
                                                 {
                                                     counter1++;
                                                     var request = CreateService.BuildService(user).Changes.List(pageToken);
-
+                                                    request.Fields = "changes(file,fileId)";
                                                     request.Spaces = "drive";
-                                                    request.Fields = "*";
-
-                                                    DateTime dt = DateTime.Now;
-
+                                                    
+                                                    //DateTime dt = DateTime.Now;
                                                     var changes = request.Execute();
 
                                                         foreach (var change in changes.Changes)
@@ -393,7 +391,7 @@ namespace TuckerTech_GABackup_GUI
                                                             request = CreateService.BuildService(user).Files.Export(fileId, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
                                                             ext = ".xls";
                                                         }
-                                                        if (mimetype == "application/vnd.google-apps.document" || mimetype == "application/vnd.google-apps.kix")
+                                                        if (mimetype == "application/vnd.google-apps.document" || mimetype == "application/vnd.google-apps.kix" || mimetype == "application/msword")
                                                         {
                                                             request = CreateService.BuildService(user).Files.Export(fileId, "application/vnd.openxmlformats-officedocument.wordprocessingml.document");
                                                             ext = ".docx";
@@ -415,7 +413,7 @@ namespace TuckerTech_GABackup_GUI
                                                         {
 
                                                             // Again, things get a little sloppy. Let's find if these files match any of the types in our IF statement.
-                                                            if (mimetype == "image/gif" || mimetype == "image/jpeg" || mimetype == "image/png" || mimetype == "text/plain" || mimetype == "application/pdf" || mimetype == "application/vnd.google-apps.drawing" || mimetype == "application/vnd.google-apps.form")
+                                                            if (mimetype == "image/gif" || mimetype == "image/jpeg" || mimetype == "image/png" || mimetype == "text/plain" || mimetype == "application/pdf" || mimetype == "application/vnd.google-apps.drawing" || mimetype == "application/vnd.google-apps.form" || mimetype == "application/vnd.google-apps.audio" || mimetype == "audio/mpeg" || mimetype == "application/vnd.google-apps.unknown")
                                                             {
                                                                 if (mimetype == "application/pdf")
                                                                 {
@@ -437,8 +435,7 @@ namespace TuckerTech_GABackup_GUI
                                                                             {
                                                                                 case DownloadStatus.Downloading:
                                                                                     {
-
-                                                                                        txtLog.Text += (progress.BytesDownloaded);
+                                                                                        throw new Exception("File may be corrupted.");
                                                                                         break;
                                                                                     }
                                                                                 case DownloadStatus.Completed:
@@ -478,8 +475,9 @@ namespace TuckerTech_GABackup_GUI
                                                                         {
                                                                             case DownloadStatus.Downloading:
                                                                                 {
-                                                                                    txtLog.Text += (progress.BytesDownloaded);
-                                                                                    break;
+
+                                                                                      throw new Exception("File may be corrupted.");
+                                                                                      break;
                                                                                 }
                                                                             case DownloadStatus.Completed:
                                                                                 {
@@ -497,6 +495,8 @@ namespace TuckerTech_GABackup_GUI
                                                                         }
                                                                     };
                                                                 request.Download(stream);
+                                                                stream.Close();
+                                                                stream.Dispose();
                                                                 if (oops == 1)
                                                                 {
                                                                     txtLog.Text += (Environment.NewLine + fileName + " could not be downloaded. Possible Google draw/form OR bad name.\n" + Environment.NewLine);
@@ -506,8 +506,7 @@ namespace TuckerTech_GABackup_GUI
                                                                 else
                                                                 {
                                                                     // Move file to the FS directory.
-                                                                    stream.Close();
-                                                                    stream.Dispose();
+
                                                                     while (foundmatch != folderfilelen)
                                                                     {
                                                                         foreach (string folders in foldervalues)
